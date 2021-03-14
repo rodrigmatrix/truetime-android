@@ -30,17 +30,6 @@ public class TrueTime {
         }
 
         long cachedSntpTime = _getCachedSntpTime();
-
-        if (cachedSntpTime == 0) {
-            try {
-                INSTANCE.requestTime(INSTANCE._ntpHost);
-                saveTrueTimeInfoToDisk();
-                cachedSntpTime = _getCachedSntpTime();
-            } catch (Exception e) {
-                return null;
-            }
-        }
-
         long cachedDeviceUptime = _getCachedDeviceUptime();
         long deviceUptime = SystemClock.elapsedRealtime();
         long now = cachedSntpTime + (deviceUptime - cachedDeviceUptime);

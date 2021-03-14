@@ -7,6 +7,8 @@ import android.util.Log;
 import com.instacart.library.truetime.TrueTime;
 import com.instacart.library.truetime.TrueTimeRx;
 
+import org.jetbrains.annotations.NotNull;
+
 import java.io.IOException;
 import java.util.Date;
 
@@ -21,14 +23,14 @@ public class App extends Application {
     @Override
     public void onCreate() {
         super.onCreate();
-        initRxTrueTime();
-//        initTrueTime();
+        //initRxTrueTime();
+       initTrueTime();
     }
 
     /**
      * init the TrueTime using a AsyncTask.
      */
-    private void initTrueTime() {
+     void initTrueTime() {
         new InitTrueTimeAsyncTask().execute();
     }
 
@@ -40,7 +42,7 @@ public class App extends Application {
                 TrueTime.build()
                         //.withSharedPreferences(SampleActivity.this)
                         .withNtpHost("time.google.com")
-                        .withLoggingEnabled(false)
+                        .withLoggingEnabled(true)
                         .withSharedPreferencesCache(App.this)
                         .withConnectionTimeout(3_1428)
                         .initialize();
@@ -55,7 +57,7 @@ public class App extends Application {
     /**
      * Initialize the TrueTime using RxJava.
      */
-    private void initRxTrueTime() {
+    void initRxTrueTime() {
         DisposableSingleObserver<Date> disposable = TrueTimeRx.build()
                 .withConnectionTimeout(31_428)
                 .withRetryCount(100)
@@ -66,12 +68,12 @@ public class App extends Application {
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribeWith(new DisposableSingleObserver<Date>() {
                     @Override
-                    public void onSuccess(Date date) {
+                    public void onSuccess(@NotNull Date date) {
                         Log.d(TAG, "Success initialized TrueTime :" + date.toString());
                     }
 
                     @Override
-                    public void onError(Throwable e) {
+                    public void onError(@NotNull Throwable e) {
                         Log.e(TAG, "something went wrong when trying to initializeRx TrueTime", e);
                     }
                 });

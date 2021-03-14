@@ -9,6 +9,7 @@ import android.widget.Toast;
 
 import com.instacart.library.truetime.TrueTimeRx;
 
+import java.io.IOException;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -35,7 +36,6 @@ public class Sample2Activity
         getSupportActionBar().setTitle("TrueTimeRx");
 
         ButterKnife.bind(this);
-        refreshBtn.setEnabled(TrueTimeRx.isInitialized());
     }
 
     @OnClick(R.id.tt_btn_refresh)

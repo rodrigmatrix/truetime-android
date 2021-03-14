@@ -31,7 +31,6 @@ public class SampleActivity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_sample);
         ButterKnife.bind(this);
-        refreshBtn.setEnabled(TrueTime.isInitialized());
     }
 
     @OnClick(R.id.tt_btn_refresh)
