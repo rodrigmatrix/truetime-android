@@ -10,7 +10,7 @@ public class TrueTime {
 
     private static final String TAG = TrueTime.class.getSimpleName();
 
-    private static final TrueTime INSTANCE = new TrueTime();
+    static final TrueTime INSTANCE = new TrueTime();
     private static final DiskCacheClient DISK_CACHE_CLIENT = new DiskCacheClient();
     private static final SntpClient SNTP_CLIENT = new SntpClient();
 
@@ -19,7 +19,7 @@ public class TrueTime {
     private static int _serverResponseDelayMax = 750;
     private static int _udpSocketTimeoutInMillis = 30_000;
 
-    private String _ntpHost = "1.us.pool.ntp.org";
+    String _ntpHost = "1.us.pool.ntp.org";
 
     /**
      * @return Date object that returns the current time in the default Timezone
@@ -30,6 +30,17 @@ public class TrueTime {
         }
 
         long cachedSntpTime = _getCachedSntpTime();
+
+        if (cachedSntpTime == 0) {
+            try {
+                INSTANCE.requestTime(INSTANCE._ntpHost);
+                saveTrueTimeInfoToDisk();
+                cachedSntpTime = _getCachedSntpTime();
+            } catch (Exception e) {
+                return null;
+            }
+        }
+
         long cachedDeviceUptime = _getCachedDeviceUptime();
         long deviceUptime = SystemClock.elapsedRealtime();
         long now = cachedSntpTime + (deviceUptime - cachedDeviceUptime);
@@ -162,15 +173,10 @@ public class TrueTime {
     }
 
     private static long _getCachedSntpTime() {
-        long cachedSntpTime = SNTP_CLIENT.wasInitialized()
+
+        return SNTP_CLIENT.wasInitialized()
                               ? SNTP_CLIENT.getCachedSntpTime()
                               : DISK_CACHE_CLIENT.getCachedSntpTime();
-
-        if (cachedSntpTime == 0L) {
-            throw new RuntimeException("expected SNTP time from last boot to be cached. couldn't find it.");
-        }
-
-        return cachedSntpTime;
     }
 
 }
